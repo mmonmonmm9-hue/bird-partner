@@ -7,11 +7,10 @@ export const cn = clsx
 
 export function Logo({ className, size = 1 }: { className?: string; size?: number }) {
   return (
-    <span className={cn('inline-flex select-none items-center gap-2.5', className)} aria-label="Bird Partner">
+    <span className={cn('inline-flex select-none items-center gap-2.5', className)} aria-label="Bird">
       <img src="/bird-mark.png" alt="" style={{ height: 38 * size }} className="w-auto" draggable={false} />
-      <span className="flex flex-col leading-[0.88] text-bird" style={{ fontFamily: '"Exo 2", "IBM Plex Sans Thai", sans-serif', fontStyle: 'italic', fontWeight: 800 }}>
-        <span style={{ fontSize: 26 * size }} className="tracking-tight">BIRD</span>
-        <span style={{ fontSize: 15 * size }} className="tracking-[0.14em]">PARTNER</span>
+      <span className="leading-none text-bird" style={{ fontFamily: '"Exo 2", "IBM Plex Sans Thai", sans-serif', fontStyle: 'italic', fontWeight: 800, fontSize: 34 * size, letterSpacing: '-0.01em' }}>
+        BIRD
       </span>
     </span>
   )

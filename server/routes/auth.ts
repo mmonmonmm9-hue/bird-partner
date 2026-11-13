@@ -70,13 +70,14 @@ authRouter.post('/signup/email', limit(10), async (req, res) => {
   if (s.otp_sent_at && Date.now() - s.otp_sent_at < 45_000) return res.status(429).json({ error: 'wait', message: 'ขอรหัสใหม่ได้ภายใน 45 วินาที' })
   const code = randomOtp()
   run('UPDATE signups SET email=?, otp_hash=?, otp_expires=?, otp_attempts=0, otp_sent_at=?, email_verified=0 WHERE id=?', e.data, sha256(`${s.id}:${code}`), Date.now() + 10 * 60_000, Date.now(), s.id)
+  let mailSent = false
   try {
-    await sendOtp(e.data, code)
+    mailSent = (await sendOtp(e.data, code)).sent
   } catch (err) {
     console.error('[mail] failed', err)
     return res.status(502).json({ error: 'mail_failed', message: 'ส่งอีเมลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง' })
   }
-  res.json({ ok: true, email: e.data, ...(config.devOtp && !mailConfigured ? { devCode: code } : {}) })
+  res.json({ ok: true, email: e.data, mailSent, ...(config.devOtp && !mailConfigured ? { devCode: code } : {}) })
 })
 
 authRouter.post('/signup/verify', limit(30), (req, res) => {

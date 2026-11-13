@@ -35,6 +35,7 @@ export function Signup() {
   const [pw2, setPw2] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [devCode, setDevCode] = useState<string>()
+  const [mailSent, setMailSent] = useState(true)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string>()
   const [cool, setCool] = useState(0)
@@ -75,8 +76,9 @@ export function Signup() {
   const sendCode = (e?: FormEvent) => {
     e?.preventDefault()
     void run(async () => {
-      const r = await api.post<{ devCode?: string }>('/auth/signup/email', { email })
+      const r = await api.post<{ devCode?: string; mailSent?: boolean }>('/auth/signup/email', { email })
       setDevCode(r.devCode)
+      setMailSent(r.mailSent !== false)
       setCode('')
       setCool(45)
       setStep('code')
@@ -170,7 +172,8 @@ export function Signup() {
               )}
 
               {step === 'code' && (
-                <Form onSubmit={verify} title="กรอกรหัสยืนยัน" sub={`ส่งรหัส 6 หลักไปที่ ${email} แล้ว (ใช้ได้ 10 นาที)`}>
+                <Form onSubmit={verify} title="กรอกรหัสยืนยัน" sub={mailSent || devCode ? `ส่งรหัส 6 หลักไปที่ ${email} แล้ว (ใช้ได้ 10 นาที)` : 'ยังส่งรหัสทางอีเมลไม่ได้ในขณะนี้'}>
+                  {!mailSent && !devCode && <Notice tone="bad">ขณะนี้ระบบยังไม่ได้ตั้งค่าการส่งอีเมล รหัสยืนยันจึง <b>ยังไม่ถูกส่งถึงคุณ</b> กรุณาติดต่อผู้ดูแลระบบของ Bird หรือลองใหม่ภายหลัง</Notice>}
                   {devCode && <Notice tone="warn">โหมดทดสอบ: เซิร์ฟเวอร์ยังไม่ได้ตั้งค่าส่งอีเมล รหัสของคุณคือ <b className="tracking-widest">{devCode}</b></Notice>}
                   <label className="flex flex-col gap-2">
                     <span className="label">รหัส 6 หลัก</span>
