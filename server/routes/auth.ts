@@ -2,7 +2,7 @@ import { Router } from 'express'
 import rateLimit from 'express-rate-limit'
 import crypto from 'node:crypto'
 import { z } from 'zod'
-import { validThaiId13 } from '../../shared/thai.ts'
+import { validJuristic13, validThaiId13 } from '../../shared/thai.ts'
 import { greeting } from '../../shared/offline.ts'
 import { profileRemaining } from '../../shared/profile.ts'
 import { config } from '../config.ts'
@@ -24,11 +24,16 @@ const passwordSchema = z
   .max(128)
   .refine((p) => /[A-Za-z]/.test(p) && /\d/.test(p), 'รหัสผ่านต้องมีทั้งตัวอักษรและตัวเลข')
 
-const startSchema = z.object({
-  type: z.enum(['individual', 'business']),
-  idNumber: z.string().refine(validThaiId13, 'เลข 13 หลักไม่ถูกต้อง'),
-  consent: z.literal(true),
-})
+const startSchema = z
+  .object({
+    type: z.enum(['individual', 'business']),
+    idNumber: z.string(),
+    consent: z.literal(true),
+  })
+  .superRefine((v, ctx) => {
+    const ok = v.type === 'business' ? validJuristic13(v.idNumber) : validThaiId13(v.idNumber)
+    if (!ok) ctx.addIssue({ code: 'custom', path: ['idNumber'], message: v.type === 'business' ? 'เลขทะเบียนนิติบุคคลต้องเป็นตัวเลข 13 หลัก' : 'เลข 13 หลักไม่ถูกต้อง' })
+  })
 
 type SignupRow = {
   id: string; type: 'individual' | 'business'; id_enc: string; id_hash: string; consent_at: string; email: string | null

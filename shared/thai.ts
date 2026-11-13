@@ -28,3 +28,12 @@ export const ageFromBirth = (iso: string) => {
   if (Number.isNaN(t.getTime())) return -1
   return (Date.now() - t.getTime()) / (365.25 * 24 * 3600_000)
 }
+
+/**
+ * Juristic-person registration number: 13 digits. The check-digit rule of the national ID is NOT enforced here
+ * (it is not guaranteed to hold for every registered company); officers verify the number against the company certificate.
+ */
+export function validJuristic13(raw: string): boolean {
+  const d = raw.replace(/\D/g, '')
+  return d.length === 13 && !/^(\d)\1{12}$/.test(d)
+}

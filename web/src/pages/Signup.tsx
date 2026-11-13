@@ -3,7 +3,7 @@ import { ArrowLeft, Check, Eye, EyeOff } from 'lucide-react'
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { formatId } from '@shared/thai'
-import { validThaiId13 } from '@shared/thai'
+import { validJuristic13, validThaiId13 } from '@shared/thai'
 import { api, ApiError } from '../lib/api'
 import { useSession } from '../lib/session'
 import { ErrorLine, Logo, Notice, Screen, Spinner, cn } from '../components/ui'
@@ -50,7 +50,7 @@ export function Signup() {
 
   const biz = type === 'business'
   const digits = idRaw.replace(/\D/g, '')
-  const idValid = validThaiId13(digits)
+  const idValid = biz ? validJuristic13(digits) : validThaiId13(digits)
   const stepIndex = STEPS.findIndex((s) => s.key.includes(step))
 
   const run = async (fn: () => Promise<void>) => {
