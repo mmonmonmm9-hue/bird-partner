@@ -1,0 +1,35 @@
+# Production stack for one server (VM): the app + Caddy (automatic HTTPS certificates).
+# Needs a .env next to this file (see .env.example and DEPLOY.md), including APP_DOMAIN=partner.example.com
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      DATA_DIR: /data
+      PORT: "3001"
+    volumes:
+      - /srv/bird-data:/data                      # database + uploaded documents (back this up)
+      - /srv/bird-secrets:/secrets:ro             # e.g. /secrets/sheets-key.json (Google service account key)
+    expose:
+      - "3001"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  caddy_data:
+  caddy_config:
