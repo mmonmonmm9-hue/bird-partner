@@ -87,7 +87,7 @@ export function Chat() {
     <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_340px]">
       <section className="flex min-h-0 flex-col">
         <div className="flex items-center gap-3 px-4 pb-2 pt-3 sm:px-6">
-          <Orb size={38} />
+          <Orb size={54} />
           <div className="flex min-w-0 flex-1 flex-col">
             <span className="truncate text-[16px] font-bold text-navy">ผู้ช่วย Bird Partner</span>
             <span className="truncate text-[12.5px] text-teal">{app.ai.configured ? 'ถามทีละเรื่อง · จดข้อมูลให้อัตโนมัติ' : 'โหมดสำรอง: ตอบตามกฎ ไม่ใช่โมเดลภาษา (ยังไม่ได้ตั้งค่า AI)'}</span>

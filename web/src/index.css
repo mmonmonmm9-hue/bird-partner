@@ -111,3 +111,7 @@ textarea, input, select { font-family: inherit; }
   transition: transform .35s ease;
 }
 @media (min-width: 640px) { .ic-tile { width: 92px; height: 92px; border-radius: 30px; } }
+
+/* assistant mark (wings): gentle bob */
+@keyframes wing-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5px); } }
+.wing-mark { animation: wing-bob 4.5s ease-in-out infinite; }

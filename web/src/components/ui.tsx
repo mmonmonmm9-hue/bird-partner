@@ -17,7 +17,13 @@ export function Logo({ className, size = 1 }: { className?: string; size?: numbe
   )
 }
 
-export const Orb = ({ size = 40 }: { size?: number }) => <span aria-hidden className="orb inline-block flex-none" style={{ width: size, height: size }} />
+/** The assistant's mark: the wings used on the landing page (replaces the old glowing ball). */
+export const Orb = ({ size = 40 }: { size?: number }) => (
+  <span aria-hidden className="wing-mark relative inline-grid flex-none place-items-center" style={{ width: size * 1.45, height: size }}>
+    <span className="absolute inset-[-18%] rounded-full" style={{ background: 'radial-gradient(circle, rgba(111,227,240,.28), rgba(77,141,255,.10) 50%, transparent 70%)' }} />
+    <img src="/wings.png" alt="" draggable={false} className="relative h-full w-full object-contain drop-shadow-[0_5px_8px_rgba(40,110,230,0.55)]" />
+  </span>
+)
 
 export const Spinner = ({ className }: { className?: string }) => <Loader2 className={cn('animate-spin', className)} aria-hidden />
 
