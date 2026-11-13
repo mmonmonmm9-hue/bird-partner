@@ -140,7 +140,12 @@ export function Signup() {
                       <input className={cn('field pr-12 text-[20px] tracking-[0.06em]', digits.length === 13 && !idValid && 'border-bad')} inputMode="numeric" autoComplete="off" autoFocus placeholder="0-0000-00000-00-0" value={formatId(idRaw)} onChange={(e) => setIdRaw(e.target.value)} aria-invalid={digits.length === 13 && !idValid} />
                       {idValid && <Check size={20} className="absolute right-4 top-1/2 -translate-y-1/2 text-ok" aria-label="เลขถูกต้อง" />}
                     </div>
-                    {digits.length === 13 && !idValid && <span className="text-[13.5px] text-bad">เลข 13 หลักนี้ไม่ถูกต้อง ลองตรวจอีกครั้ง</span>}
+                    {digits.length > 0 && digits.length < 13 && <span className="text-[13.5px] text-muted">กรอกแล้ว {digits.length} จาก 13 หลัก (ขาดอีก {13 - digits.length} หลัก)</span>}
+                    {digits.length === 13 && !idValid && (
+                      <span className="text-[13.5px] text-bad">
+                        {biz ? 'เลขนี้ใช้ไม่ได้ ต้องไม่ใช่ตัวเลขซ้ำตัวเดียวทั้งหมด' : 'เลข 13 หลักนี้ไม่ถูกต้อง ลองตรวจอีกครั้ง'}
+                      </span>
+                    )}
                   </label>
                   <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-[rgba(17,80,173,0.16)] bg-white/60 p-3.5">
                     <input type="checkbox" className="mt-1 h-5 w-5 flex-none accent-[#1150ad]" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
