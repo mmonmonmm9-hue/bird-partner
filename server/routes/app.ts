@@ -11,6 +11,7 @@ import { requireUser } from '../auth.ts'
 import { config } from '../config.ts'
 import { addFile, addMessage, audit, deleteFile, getApp, getAppByUser, getFile, listMessages, nextRef, saveApp, toDto, uploadedKeys, type AppRow } from '../repo.ts'
 import { chatTurn, isEditable, onIdPhotoReceived } from '../engine.ts'
+import { addRateReply, readRateCard } from '../rates.ts'
 import { filePath, uploadMiddleware, validateAndStore } from '../uploads.ts'
 import { syncApplication } from '../sheets.ts'
 
@@ -62,11 +63,15 @@ appRouter.post('/chat/file', uploadLimit, (req, res) => {
       // which document is this? the ID photo while it is the pending question, else what the client says, else "other"
       const pending = profileRemaining(a.type, a.profile, { hasIdPhoto: uploadedKeys(a.id).has('id_front') })[0]
       const asked = String(req.body?.docKey ?? '')
-      const docKey = pending?.key === 'idPhoto' ? 'id_front' : DOC_KEYS_ALLOWED.has(asked) ? asked : 'other'
+      // the rate-card button is an explicit choice by the partner: it is the only kind of file the assistant reads
+      const docKey = asked === 'rate_card' ? 'rate_card' : pending?.key === 'idPhoto' ? 'id_front' : DOC_KEYS_ALLOWED.has(asked) ? asked : 'other'
       const id = crypto.randomUUID()
       addFile({ id, application_id: a.id, doc_key: docKey, original_name: stored.originalName, stored_name: stored.storedName, size: stored.size, mime: stored.mime, source: 'chat' })
-      addMessage(a.id, 'user', docKey === 'id_front' ? 'ส่งรูปบัตรประชาชน' : 'ส่งไฟล์แนบ', { fileId: id })
-      if (docKey === 'id_front') await onIdPhotoReceived(a.id)
+      addMessage(a.id, 'user', docKey === 'id_front' ? 'ส่งรูปบัตรประชาชน' : docKey === 'rate_card' ? 'ส่งใบเสนอราคา' : 'ส่งไฟล์แนบ', { fileId: id })
+      if (docKey === 'rate_card') {
+        const file = getFile(id)!
+        addRateReply(a.id, await readRateCard(a.id, file))
+      } else if (docKey === 'id_front') await onIdPhotoReceived(a.id)
       else addMessage(a.id, 'assistant', 'ได้รับไฟล์แล้วครับ ผมเก็บไว้ให้เจ้าหน้าที่ตรวจ (ผมไม่ได้อ่านเนื้อหาในไฟล์) ถ้าเป็นเอกสารบังคับ ไปแนบในหน้า "เอกสาร" ได้ภายหลังครับ', {})
       const next = getApp(a.id)!
       res.json({ app: toDto(next), messages: listMessages(a.id), blockers: blockers(snapshot(next)) })

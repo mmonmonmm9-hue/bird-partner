@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { Camera, Check, ClipboardList, FileText, HelpCircle, Paperclip, SendHorizonal, X } from 'lucide-react'
+import { Camera, Check, ClipboardList, FileText, HelpCircle, Paperclip, Receipt, SendHorizonal, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { AppDto, ChatMessageDto, Profile } from '@shared/types'
@@ -34,6 +34,7 @@ export function Chat() {
   const taRef = useRef<HTMLTextAreaElement>(null)
   const camRef = useRef<HTMLInputElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+  const rateRef = useRef<HTMLInputElement>(null)
   const editable = app.status === 'draft' || app.status === 'needs_info'
 
   useEffect(() => {
@@ -70,6 +71,12 @@ export function Chat() {
     const ok = await guard(() => api.post<AppState>('/app/chat', { text: t }))
     if (!ok) setText(t)
     taRef.current?.focus()
+  }
+
+  const attachRate = async (f?: File | null) => {
+    if (!f || busy || !editable) return
+    setPending('กำลังอ่านใบเสนอราคา…')
+    await guard(() => api.upload<AppState>('/app/chat/file', f, { docKey: 'rate_card' }))
   }
 
   const attach = async (f?: File | null) => {
@@ -114,9 +121,11 @@ export function Chat() {
               <div className="flex items-end gap-2">
                 <div className="glass flex flex-1 items-end gap-1 rounded-[22px] px-2 py-1.5">
                   <input ref={camRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => { void attach(e.target.files?.[0]); e.target.value = '' }} />
+                  <input ref={rateRef} type="file" accept="application/pdf,image/*" hidden onChange={(e) => { void attachRate(e.target.files?.[0]); e.target.value = '' }} />
                   <input ref={fileRef} type="file" accept="image/*,application/pdf" hidden onChange={(e) => { void attach(e.target.files?.[0]); e.target.value = '' }} />
                   <button type="button" onClick={() => camRef.current?.click()} aria-label="ถ่ายรูป" className="grid h-10 w-10 flex-none place-items-center rounded-full border-0 bg-transparent text-bird hover:bg-[rgba(77,141,255,0.1)]"><Camera size={21} /></button>
                   <button type="button" onClick={() => fileRef.current?.click()} aria-label="แนบไฟล์" className="grid h-10 w-10 flex-none place-items-center rounded-full border-0 bg-transparent text-bird hover:bg-[rgba(77,141,255,0.1)]"><Paperclip size={21} /></button>
+                  <button type="button" onClick={() => rateRef.current?.click()} aria-label="แนบใบเสนอราคาให้ผู้ช่วยอ่านและจดราคา" title="แนบใบเสนอราคา (ผู้ช่วยจะอ่านไฟล์นี้)" className="grid h-10 w-10 flex-none place-items-center rounded-full border-0 bg-transparent text-teal hover:bg-[rgba(11,111,142,0.1)]"><Receipt size={21} /></button>
                   <textarea
                     ref={taRef}
                     rows={1}
@@ -140,7 +149,7 @@ export function Chat() {
             )}
             {editable && (
               <div className="flex items-center justify-between gap-3 text-[12.5px] text-faint">
-                <span>ผู้ช่วยไม่ได้อ่านรูปหรือไฟล์ที่แนบ เจ้าหน้าที่เป็นผู้ตรวจ</span>
+                <span>ผู้ช่วยไม่อ่านรูปหรือไฟล์ที่แนบ ยกเว้นไฟล์ที่แนบด้วยปุ่มใบเสนอราคา <Receipt size={12} className="inline align-[-1px] text-teal" /> (ผู้ช่วยจะอ่านและจดราคาให้)</span>
                 <Link to="/app/docs" className="inline-flex flex-none items-center gap-1 font-semibold text-bird"><FileText size={14} /> ไปหน้าเอกสาร</Link>
               </div>
             )}

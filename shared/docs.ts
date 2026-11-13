@@ -44,6 +44,7 @@ export function docTemplates(type: ApplicantType, profile: Profile, lines: Servi
   if (cats.has('warehouse')) out.push(T('warehouse_proof', 'เอกสารสิทธิ์/สัญญาเช่าคลัง', 'ระบุที่ตั้งและพื้นที่คลัง', true, 'เพราะให้บริการคลังสินค้า'))
   if (lines.some((l) => l.dangerousGoods === true || l.cargoTypes?.some((c) => /DG|วัตถุอันตราย/.test(c)))) out.push(T('dg_permit', 'ใบอนุญาตขนส่งวัตถุอันตราย', 'จำเป็นเมื่อรับวัตถุอันตราย', true, 'เพราะรับวัตถุอันตราย'))
   if (lines.some((l) => l.cargoTypes?.some((c) => /Cold/i.test(c)))) out.push(T('cold_chain', 'หลักฐานระบบควบคุมอุณหภูมิ (Cold chain)', 'เช่น ใบรับรองรถ/คลังควบคุมอุณหภูมิ', false, 'เพราะรับสินค้าควบคุมอุณหภูมิ'))
+  out.push(T('rate_card', 'ใบเสนอราคา / ตารางราคา (ถ้ามี)', 'แนบผ่านแชตด้วยปุ่มใบเสนอราคา ผู้ช่วยจะอ่านแล้วจดราคาให้ หรือแนบที่นี่เพื่อให้เจ้าหน้าที่ดู', false))
   return out
 }
 
@@ -53,6 +54,6 @@ function sameName(a: string, b: string) {
 }
 
 export const DOC_KEYS_ALLOWED = new Set([
-  'id_front', 'id_selfie', 'driver_license', 'bank_book', 'company_cert', 'shareholders', 'director_id', 'poa', 'vat_cert', 'customs_license', 'airline_auth',
+  'id_front', 'id_selfie', 'driver_license', 'rate_card', 'bank_book', 'company_cert', 'shareholders', 'director_id', 'poa', 'vat_cert', 'customs_license', 'airline_auth',
   'vehicle_docs', 'border_permit', 'transport_permit', 'warehouse_proof', 'dg_permit', 'cold_chain',
 ])

@@ -18,7 +18,7 @@ export interface TurnInput {
 }
 
 let client: Anthropic | null = null
-const getClient = () => (client ??= new Anthropic()) // reads ANTHROPIC_API_KEY (or the configured credentials) from the environment
+export const getClient = () => (client ??= new Anthropic()) // reads ANTHROPIC_API_KEY (or the configured credentials) from the environment
 
 const SCHEMA = {
   type: 'object',

@@ -76,7 +76,7 @@ export function offlineTurn(text: string, ctx: OfflineCtx): AiTurnResult {
 const VALUE_FIRST = new Set(['pricing.surcharges'])
 
 /** Example answers for open (free-text) questions, so every question carries a format hint. */
-const KEY_HINTS: Record<string, string> = {
+export const KEY_HINTS: Record<string, string> = {
   coverage: '"กรุงเทพฯ ปริมณฑล และภาคกลาง" หรือ "ทั่วประเทศ" หรือ "กรุงเทพ–ชลบุรี–ระยอง"',
   equipment: '"รถกระบะ 4 ล้อ 5 คัน" หรือ "มอเตอร์ไซค์ 10 คัน" หรือ "รถหัวลาก 3 คัน"',
   transit: '"1–2 วัน" หรือ "3–5 วันทำการ" หรือ "ภายในวัน"',
